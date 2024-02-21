@@ -19,3 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/notes', \App\Http\Controllers\notesController::class);
+// Route::apiResource('/notes/update/', notesController::class, 'update');
+// Route::apiResource('/notes/delete/', notesController::class, 'delete');
