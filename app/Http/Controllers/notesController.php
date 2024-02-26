@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class notesController extends Controller
 {
@@ -28,21 +30,34 @@ class notesController extends Controller
         return ["status" => 1, "data => $note"];
     }
 
-    public function update(Request $request, Note $note)
-    {
-        $request->validate([
-            'tag' => 'required',
-            'note' => 'required',
-        ]);
+    public function update(Request $request, $id)
+{
+    $validator = Validator::make($request->all(), [
+        'tag' => 'required',
+        'note' => 'required',
+    ]);
 
-        $note->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $note,
-            "msg" => "Blog updated successfully"
-        ];
+    if ($validator->fails()) {
+        return response()->json([
+            "status" => 0,
+            "msg" => "Validation failed",
+            "errors" => $validator->errors()
+        ], 400);
     }
+
+    $note = Note::find($id);
+
+    $note->tag = $request->tag;
+    $note->note = $request->note;
+    $note->save();
+
+    return response()->json([
+        "status" => 1,
+        "data" => $note,
+        "msg" => "Note updated successfully"
+    ], 200);
+}
+
 
     public function destroy(Note $note)
     {
